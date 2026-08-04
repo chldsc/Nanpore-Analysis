@@ -32,9 +32,17 @@ def match_percentage(counter, read, start_region, end_region, debug = False):
     if debug == True:
         print(f"Percentage Match: {final_percent}")
     return (aligned_bases/region_size)*100
+
+
+    #generates histograms for the counts and proportions of reads that match a specified region.
     
+    #bamfile – path to the BAM alignment file.
+    #contig – chromosome/contig to examine.
+    #start_region, end_region – the genomic region whose overlap is being measured.
+    #total_reads – total number of reads in the dataset.
+    #start_contig, end_contig – portion of the contig to search for reads.
+    #debug – passed into match_percentage() for extra output
 def frequency_pipeline(bamfile, contig, start_region, end_region, total_reads, start_contig, end_contig, debug = False):
-    #region_size = end_region - start_region
     start_region = start_region - 1
     bam = pysam.AlignmentFile(bamfile, "rb")
 
@@ -44,7 +52,7 @@ def frequency_pipeline(bamfile, contig, start_region, end_region, total_reads, s
     counter = 1
     final_percentages = []
 
-    # Regions are ANY read that has a read in that region 
+    #regions are ANY read that has a read in that region 
     for read in bam.fetch(contig, start_contig, end_contig): #hard coded rn
         total_reads_contig += 1   
         
@@ -56,7 +64,7 @@ def frequency_pipeline(bamfile, contig, start_region, end_region, total_reads, s
             final_percentages.append(0)
             continue
             
-        # Calculate match percentage for given read
+        #calculate match percentage for given read
         read_percent = match_percentage(counter, read, start_region, end_region, debug = debug)
         final_percentages.append(read_percent)
         counter +=1
@@ -122,7 +130,7 @@ def itr_classifier(bamfile, contig, percent_threshold, five_start, five_end, thr
     three_prime_percents = []
     final_counts = [0,0,0,0]
 
-    # Regions are ANY read that has a read in that region 
+    #regions are ANY read that has a read in that region 
     for read in bam.fetch(contig, start_contig, end_contig): #hard coded rn
         total_reads_contig += 1   
         
@@ -134,7 +142,7 @@ def itr_classifier(bamfile, contig, percent_threshold, five_start, five_end, thr
             final_counts[0]+=1
             continue
             
-        # Calculate match percentage for given read
+        #calculate match percentage for given read
         five_percent = match_percentage(counter, read, five_start, five_end, debug = debug)
         three_percent = match_percentage(counter, read, three_start, three_end, debug = debug)
         #0 = none, 1= just five prime, 2= just three prime 3= both
